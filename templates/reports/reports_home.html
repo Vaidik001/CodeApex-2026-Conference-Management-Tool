@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Reports | CMT{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item active">Reports</li>
+        </ol>
+    </nav>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0"><i class="bi bi-bar-chart text-primary"></i> Reports & Analytics</h2>
+        <button onclick="window.print()" class="btn btn-outline-primary btn-sm"><i class="bi bi-printer"></i> Print Report</button>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3"><div class="card border-0 shadow-sm bg-primary text-white"><div class="card-body"><div class="small opacity-75">Total Conferences</div><div class="fs-3 fw-bold">{{ total_conferences }}</div></div></div></div>
+        <div class="col-6 col-lg-3"><div class="card border-0 shadow-sm bg-success text-white"><div class="card-body"><div class="small opacity-75">Accepted</div><div class="fs-3 fw-bold">{{ accepted }}</div></div></div></div>
+        <div class="col-6 col-lg-3"><div class="card border-0 shadow-sm bg-danger text-white"><div class="card-body"><div class="small opacity-75">Rejected</div><div class="fs-3 fw-bold">{{ rejected }}</div></div></div></div>
+        <div class="col-6 col-lg-3"><div class="card border-0 shadow-sm bg-warning"><div class="card-body"><div class="small text-muted">Pending</div><div class="fs-3 fw-bold">{{ pending }}</div></div></div></div>
+        <div class="col-6 col-lg-6"><div class="card border-0 shadow-sm"><div class="card-body"><div class="small text-muted">Total Registrations</div><div class="fs-3 fw-bold">{{ total_registrations }}</div></div></div></div>
+        <div class="col-6 col-lg-6"><div class="card border-0 shadow-sm"><div class="card-body"><div class="small text-muted">Total Revenue</div><div class="fs-3 fw-bold text-primary">₹{{ total_revenue }}</div></div></div></div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-lg-6"><div class="card border-0 shadow-sm h-100"><div class="card-header bg-white fw-semibold">Conferences by Department</div><div class="card-body"><canvas id="deptChart" height="200"></canvas></div></div></div>
+        <div class="col-lg-6"><div class="card border-0 shadow-sm h-100"><div class="card-header bg-white fw-semibold">Submission Status</div><div class="card-body"><canvas id="statusChart" height="200"></canvas></div></div></div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white fw-semibold">Department-wise Report</div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light"><tr><th>Department</th><th>Conferences</th><th>Submissions</th><th>Accepted</th><th>Rejected</th><th>Pending</th></tr></thead>
+                    <tbody>
+                    {% for d in dept_stats %}
+                    <tr><td>{{ d.name }}</td><td>{{ d.conferences }}</td><td>{{ d.submissions }}</td><td class="text-success">{{ d.accepted }}</td><td class="text-danger">{{ d.rejected }}</td><td class="text-warning">{{ d.pending }}</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white fw-semibold">Export Reports (CSV)</div>
+        <div class="card-body">
+            <div class="row g-2">
+                <div class="col-md-4 mb-2"><a href="{% url 'conference_report_csv' %}" class="btn btn-outline-primary w-100"><i class="bi bi-file-earmark-spreadsheet"></i> Conference Report</a></div>
+                <div class="col-md-4 mb-2"><a href="{% url 'submission_report_csv' %}" class="btn btn-outline-primary w-100"><i class="bi bi-file-earmark-spreadsheet"></i> Submission Report</a></div>
+                <div class="col-md-4 mb-2"><a href="{% url 'registration_report_csv' %}" class="btn btn-outline-primary w-100"><i class="bi bi-file-earmark-spreadsheet"></i> Registration Report</a></div>
+                <div class="col-md-4 mb-2"><a href="{% url 'payment_report_csv' %}" class="btn btn-outline-primary w-100"><i class="bi bi-file-earmark-spreadsheet"></i> Payment Report</a></div>
+                <div class="col-md-4 mb-2"><a href="{% url 'department_report_csv' %}" class="btn btn-outline-primary w-100"><i class="bi bi-file-earmark-spreadsheet"></i> Department Report</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const deptLabels = [{% for l in dept_labels %}"{{ l|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+const deptCounts = [{% for c in dept_counts %}{{ c }}{% if not forloop.last %},{% endif %}{% endfor %}];
+new Chart(document.getElementById('deptChart'), { type: 'bar', data: { labels: deptLabels, datasets: [{ label: 'Conferences', data: deptCounts, backgroundColor: '#0d6efd' }] }, options: { responsive: true, plugins: { legend: { display: false } } } });
+
+const statusLabels = [{% for k, v in status_counts.items %}"{{ k|title }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+const statusData = [{% for k, v in status_counts.items %}{{ v }}{% if not forloop.last %},{% endif %}{% endfor %}];
+new Chart(document.getElementById('statusChart'), { type: 'doughnut', data: { labels: statusLabels, datasets: [{ data: statusData, backgroundColor: ['#0dcaf0','#ffc107','#198754','#dc3545','#fd7e14','#0d6efd'] }] } });
+</script>
+{% endblock %}

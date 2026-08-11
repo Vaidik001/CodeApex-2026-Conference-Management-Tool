@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}All Submissions | CMT{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item active">All Submissions</li>
+        </ol>
+    </nav>
+    <h2 class="fw-bold mb-3"><i class="bi bi-file-earmark-text text-primary"></i> All Submissions</h2>
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body">
+            <form method="get" class="row g-2 align-items-end">
+                <div class="col-md-3"><label class="form-label small">Search</label><input type="text" name="q" class="form-control" value="{{ q }}" placeholder="Abstract ID, title, author"></div>
+                <div class="col-md-3"><label class="form-label small">Conference</label><select name="conference" class="form-select"><option value="">All</option>{% for c in conferences %}<option value="{{ c.pk }}" {% if conf == c.pk|stringformat:"s" %}selected{% endif %}>{{ c.title|truncatechars:30 }}</option>{% endfor %}</select></div>
+                <div class="col-md-2"><label class="form-label small">Status</label><select name="status" class="form-select"><option value="">All</option>{% for s in status_choices %}<option value="{{ s.0 }}" {% if status == s.0 %}selected{% endif %}>{{ s.1 }}</option>{% endfor %}</select></div>
+                <div class="col-md-2"><label class="form-label small">Type</label><select name="ptype" class="form-select"><option value="">All</option>{% for p in ptype_choices %}<option value="{{ p.0 }}" {% if ptype == p.0 %}selected{% endif %}>{{ p.1 }}</option>{% endfor %}</select></div>
+                <div class="col-md-2"><button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel"></i> Filter</button></div>
+            </form>
+        </div>
+    </div>
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light"><tr><th>Abstract ID</th><th>Title</th><th>Author</th><th>Conference</th><th>Type</th><th>Status</th><th>Action</th></tr></thead>
+                    <tbody>
+                    {% for s in page_obj %}
+                    <tr>
+                        <td><code>{{ s.abstract_id }}</code></td>
+                        <td>{{ s.title|truncatechars:30 }}</td>
+                        <td>{{ s.author.username }}</td>
+                        <td>{{ s.conference.title|truncatechars:20 }}</td>
+                        <td>{{ s.get_presentation_type_display }}</td>
+                        <td><span class="badge {{ s.status_badge_class }}">{{ s.get_status_display }}</span></td>
+                        <td><a href="{% url 'submission_detail' pk=s.pk %}" class="btn btn-sm btn-outline-primary">Manage</a></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="7" class="text-center text-muted py-4">No submissions found.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% if page_obj.has_other_pages %}
+    <nav class="mt-3"><ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ q }}&conference={{ conf }}&status={{ status }}&ptype={{ ptype }}">&laquo;</a></li>{% endif %}
+        <li class="page-item active"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ q }}&conference={{ conf }}&status={{ status }}&ptype={{ ptype }}">&raquo;</a></li>{% endif %}
+    </ul></nav>
+    {% endif %}
+</div>
+{% endblock %}

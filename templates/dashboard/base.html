@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <aside class="col-lg-2 col-md-3 cmt-sidebar p-0 d-none d-md-block">
+            <div class="d-flex flex-column p-3 text-light h-100">
+                <h6 class="text-uppercase small text-secondary border-bottom border-secondary pb-2 mb-3">Menu</h6>
+                <nav class="nav flex-column gap-1">
+                    {% block sidebar_links %}
+                    <a class="nav-link text-light" href="{% url 'dashboard_redirect' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    <a class="nav-link text-light" href="{% url 'conference_list' %}"><i class="bi bi-collection"></i> Conferences</a>
+                    <a class="nav-link text-light" href="{% url 'department_list' %}"><i class="bi bi-diagram-3"></i> Departments</a>
+                    <a class="nav-link text-light" href="{% url 'my_submissions' %}"><i class="bi bi-file-earmark-text"></i> My Submissions</a>
+                    <a class="nav-link text-light" href="{% url 'my_registrations' %}"><i class="bi bi-card-checklist"></i> My Registrations</a>
+                    <a class="nav-link text-light" href="{% url 'all_payments' %}"><i class="bi bi-credit-card"></i> Payments</a>
+                    <a class="nav-link text-light" href="{% url 'profile' %}"><i class="bi bi-person"></i> My Profile</a>
+                    <a class="nav-link text-light" href="{% url 'notifications' %}"><i class="bi bi-bell"></i> Notifications</a>
+                    <hr class="border-secondary">
+                    <a class="nav-link text-warning" href="{% url 'logout_redirect' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                    {% endblock %}
+                </nav>
+            </div>
+        </aside>
+        <main class="col-lg-10 col-md-9 py-4">
+            {% block dashboard_content %}{% endblock %}
+        </main>
+    </div>
+</div>
+{% endblock %}

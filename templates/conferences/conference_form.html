@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}{{ form_title }} | CMT{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'conference_list' %}">Conferences</a></li>
+            <li class="breadcrumb-item active">{{ form_title }}</li>
+        </ol>
+    </nav>
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <h3 class="fw-bold mb-4"><i class="bi bi-calendar-plus text-primary"></i> {{ form_title }}</h3>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">Title</label>
+                                <input type="text" name="title" class="form-control" value="{{ conference.title|default:'' }}" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Description</label>
+                                <textarea name="description" class="form-control" rows="4">{{ conference.description|default:'' }}</textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Department</label>
+                                <select name="department" class="form-select">
+                                    <option value="">— None —</option>
+                                    {% for d in departments %}<option value="{{ d.pk }}" {% if conference.department_id == d.pk %}selected{% endif %}>{{ d.name }}</option>{% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Venue</label>
+                                <input type="text" name="venue" class="form-control" value="{{ conference.venue|default:'' }}" required>
+                            </div>
+                            <div class="col-md-6"><label class="form-label">Start Date</label><input type="date" name="start_date" class="form-control" value="{{ conference.start_date|date:'Y-m-d'|default:'' }}" required></div>
+                            <div class="col-md-6"><label class="form-label">End Date</label><input type="date" name="end_date" class="form-control" value="{{ conference.end_date|date:'Y-m-d'|default:'' }}" required></div>
+                            <div class="col-md-6"><label class="form-label">Organizer</label><input type="text" name="organizer" class="form-control" value="{{ conference.organizer|default:'' }}"></div>
+                            <div class="col-md-6"><label class="form-label">Contact Email</label><input type="email" name="contact_email" class="form-control" value="{{ conference.contact_email|default:'' }}"></div>
+                            <div class="col-md-6"><label class="form-label">Contact Phone</label><input type="text" name="contact_phone" class="form-control" value="{{ conference.contact_phone|default:'' }}"></div>
+                            <div class="col-md-6"><label class="form-label">Registration Fee (₹)</label><input type="number" name="registration_fee" class="form-control" step="0.01" value="{{ conference.registration_fee|default:'0' }}"></div>
+                            <div class="col-md-4"><label class="form-label">Registration Deadline</label><input type="date" name="registration_deadline" class="form-control" value="{{ conference.registration_deadline|date:'Y-m-d'|default:'' }}"></div>
+                            <div class="col-md-4"><label class="form-label">Abstract Deadline</label><input type="date" name="abstract_deadline" class="form-control" value="{{ conference.abstract_deadline|date:'Y-m-d'|default:'' }}"></div>
+                            <div class="col-md-4"><label class="form-label">Paper Deadline</label><input type="date" name="paper_deadline" class="form-control" value="{{ conference.paper_deadline|date:'Y-m-d'|default:'' }}"></div>
+                            <div class="col-md-6"><label class="form-label">Banner Image</label><input type="file" name="banner" class="form-control" accept="image/*"></div>
+                            <div class="col-md-6 d-flex align-items-end">
+                                <div class="form-check">
+                                    <input type="checkbox" name="is_published" class="form-check-input" id="is_published" {% if conference.is_published or not conference %}checked{% endif %}>
+                                    <label class="form-check-label" for="is_published">Published (visible to public)</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Save Conference</button>
+                            <a href="{% url 'conference_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}{{ form_title }} | CMT{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'my_submissions' %}">My Submissions</a></li>
+            <li class="breadcrumb-item active">{{ form_title }}</li>
+        </ol>
+    </nav>
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <h3 class="fw-bold mb-4"><i class="bi bi-file-earmark-arrow-up text-primary"></i> {{ form_title }}</h3>
+
+                    <div class="card bg-light border-0 mb-4">
+                        <div class="card-body">
+                            <h6 class="fw-semibold mb-3"><i class="bi bi-person-badge text-primary"></i> Author Information</h6>
+                            <div class="row small">
+                                <div class="col-md-4 mb-2"><span class="text-muted d-block">Full Name</span>{{ user.get_full_name|default:user.username }}</div>
+                                <div class="col-md-4 mb-2"><span class="text-muted d-block">Email</span>{{ user.email|default:"—" }}</div>
+                                <div class="col-md-4 mb-2"><span class="text-muted d-block">Phone</span>{{ user_profile.phone|default:"—" }}</div>
+                                <div class="col-md-4 mb-2"><span class="text-muted d-block">Institution</span>{{ user_profile.institution|default:"—" }}</div>
+                                <div class="col-md-4 mb-2"><span class="text-muted d-block">Department</span>{{ user_profile.department|default:"—" }}</div>
+                                <div class="col-md-4 mb-2"><span class="text-muted d-block">Role</span>{{ user_profile.get_role_display|default:"—" }}</div>
+                            </div>
+                            <a href="{% url 'profile' %}" class="small"><i class="bi bi-pencil-square"></i> Update author details in your profile</a>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-semibold mb-3"><i class="bi bi-file-earmark-text text-primary"></i> Paper Information</h6>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Conference</label>
+                                {{ form.conference }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Presentation Type</label>
+                                {{ form.presentation_type }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Paper Title</label>
+                                {{ form.title }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Abstract</label>
+                                {{ form.abstract_text }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Keywords (comma-separated)</label>
+                                {{ form.keywords }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Paper File (PDF only, max 10MB)</label>
+                                {{ form.paper_file }}
+                                {% if sub.paper_file %}<p class="small text-success mt-1"><i class="bi bi-file-earmark-check"></i> Current: {{ sub.paper_file.name|cut:'papers/' }}</p>{% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Poster File (PDF/JPG/PNG, max 10MB)</label>
+                                {{ form.poster_file }}
+                                {% if sub.poster_file %}<p class="small text-success mt-1"><i class="bi bi-file-earmark-check"></i> Current: {{ sub.poster_file.name|cut:'posters/' }}</p>{% endif %}
+                            </div>
+                        </div>
+                        <div class="mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Save Submission</button>
+                            <a href="{% url 'my_submissions' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

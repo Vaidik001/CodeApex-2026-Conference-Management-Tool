@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}{{ form_title }} | CMT{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <h3 class="fw-bold mb-4"><i class="bi bi-diagram-3 text-primary"></i> {{ form_title }}</h3>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Department Name</label>
+                            <input type="text" name="name" class="form-control" value="{{ department.name|default:'' }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea name="description" class="form-control" rows="3">{{ department.description|default:'' }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Coordinator</label>
+                            <select name="coordinator" class="form-select">
+                                <option value="">— None —</option>
+                                {% for c in coordinators %}<option value="{{ c.pk }}" {% if department.coordinator_id == c.pk %}selected{% endif %}>{{ c.get_full_name|default:c.username }}</option>{% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Save</button>
+                        <a href="{% url 'department_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

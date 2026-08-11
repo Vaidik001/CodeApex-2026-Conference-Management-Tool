@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Payment | CMT{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'my_registrations' %}">My Registrations</a></li>
+            <li class="breadcrumb-item active">Payment</li>
+        </ol>
+    </nav>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <h3 class="fw-bold mb-4"><i class="bi bi-credit-card text-primary"></i> Demo Payment</h3>
+                    <div class="alert alert-info"><i class="bi bi-info-circle"></i> This is a <strong>demo payment system</strong>. No real payment will be processed.</div>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2"><i class="bi bi-collection text-primary"></i> <strong>Conference:</strong> {{ reg.conference.title }}</li>
+                        <li class="mb-2"><i class="bi bi-person text-primary"></i> <strong>Participant:</strong> {{ reg.user.username }}</li>
+                        <li class="mb-2"><i class="bi bi-tag text-primary"></i> <strong>Type:</strong> {{ reg.get_participant_type_display }}</li>
+                        <li class="mb-2"><i class="bi bi-receipt text-primary"></i> <strong>Registration ID:</strong> <code>{{ reg.registration_id }}</code></li>
+                    </ul>
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between small mb-2">
+                                <span class="text-muted">Registration Fee</span>
+                                <span class="fw-semibold">₹{{ reg.registration_fee }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between small mb-2">
+                                <span class="text-muted">GST</span>
+                                <span class="fw-semibold">Not Applicable</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-semibold">Total Payable</span>
+                                <span class="fs-4 fw-bold text-primary">₹{{ reg.registration_fee }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-lg w-100"><i class="bi bi-check-circle"></i> Pay Now</button>
+                    </form>
+                    <a href="{% url 'my_registrations' %}" class="d-block text-center mt-3 small">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

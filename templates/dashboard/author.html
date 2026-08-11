@@ -1,0 +1,76 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% block title %}Author Dashboard | CMT{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">Author Dashboard</h2>
+        <p class="text-muted small mb-0">Welcome, {{ user.get_full_name|default:user.username }}</p>
+    </div>
+    <a href="{% url 'submission_create' %}" class="btn btn-primary"><i class="bi bi-file-earmark-arrow-up"></i> New Submission</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3"><div class="card border-0 shadow-sm bg-primary text-white"><div class="card-body"><div class="small opacity-75">Total Conferences</div><div class="fs-3 fw-bold">{{ total_conferences }}</div></div></div></div>
+    <div class="col-6 col-lg-3"><div class="card border-0 shadow-sm bg-info text-white"><div class="card-body"><div class="small opacity-75">My Registrations</div><div class="fs-3 fw-bold">{{ my_registrations }}</div></div></div></div>
+    <div class="col-6 col-lg-3"><div class="card border-0 shadow-sm bg-warning"><div class="card-body"><div class="small text-muted">My Submissions</div><div class="fs-3 fw-bold">{{ my_submissions }}</div></div></div></div>
+    <div class="col-6 col-lg-3"><div class="card border-0 shadow-sm bg-success text-white"><div class="card-body"><div class="small opacity-75">Accepted Papers</div><div class="fs-3 fw-bold">{{ accepted_papers }}</div></div></div></div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white fw-semibold d-flex justify-content-between align-items-center">
+        Recent Submissions
+        <a href="{% url 'my_submissions' %}" class="btn btn-sm btn-outline-primary">View all</a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light"><tr><th>Abstract ID</th><th>Title</th><th>Conference</th><th>Type</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody>
+                {% for s in recent_submissions %}
+                <tr>
+                    <td><code>{{ s.abstract_id }}</code></td>
+                    <td>{{ s.title|truncatechars:30 }}</td>
+                    <td>{{ s.conference.title|truncatechars:25 }}</td>
+                    <td>{{ s.get_presentation_type_display }}</td>
+                    <td>{{ s.submitted_at|date:"Y-m-d" }}</td>
+                    <td><span class="badge {{ s.status_badge_class }}">{{ s.get_status_display }}</span></td>
+                    <td><a href="{% url 'submission_detail' pk=s.pk %}" class="btn btn-sm btn-outline-primary">View</a></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center text-muted">No submissions yet.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white fw-semibold">Recent Registrations</div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light"><tr><th>Reg ID</th><th>Conference</th><th>Type</th><th>Fee</th><th>Payment</th></tr></thead>
+                <tbody>
+                {% for r in my_registrations_list %}
+                <tr>
+                    <td><code>{{ r.registration_id }}</code></td>
+                    <td>{{ r.conference.title|truncatechars:30 }}</td>
+                    <td>{{ r.get_participant_type_display }}</td>
+                    <td>₹{{ r.registration_fee }}</td>
+                    <td>
+                        {% if r.payment_status == 'PAID' %}<span class="badge bg-success">Paid</span>
+                        {% else %}<a href="{% url 'payment_create' reg_id=r.pk %}" class="badge bg-warning text-dark text-decoration-none">Pay Now</a>{% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center text-muted">No registrations yet.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

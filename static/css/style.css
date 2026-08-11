@@ -1,0 +1,88 @@
+:root {
+    --cmt-primary: #1a4d8f;
+    --cmt-primary-dark: #0f3460;
+    --cmt-accent: #2d6a4f;
+    --cmt-light: #f8f9fa;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f5f7fa;
+}
+
+.cmt-navbar {
+    background: linear-gradient(135deg, var(--cmt-primary-dark), var(--cmt-primary));
+}
+
+.cmt-navbar .nav-link {
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.cmt-navbar .nav-link:hover {
+    color: #cde6ff !important;
+}
+
+.cmt-hero {
+    background: linear-gradient(135deg, #0f3460 0%, #1a4d8f 50%, #2d6a4f 100%);
+}
+
+.cmt-footer {
+    background: linear-gradient(135deg, #0f3460, #1a4d8f);
+}
+
+.cmt-sidebar {
+    background: linear-gradient(180deg, #0f3460, #1a4d8f);
+    min-height: calc(100vh - 56px);
+}
+
+.cmt-sidebar .nav-link {
+    border-radius: 6px;
+    padding: 8px 12px;
+    transition: background 0.2s;
+}
+
+.cmt-sidebar .nav-link:hover,
+.cmt-sidebar .nav-link.active {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.conference-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.conference-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+.conference-banner {
+    height: 180px;
+    object-fit: cover;
+}
+
+.conference-banner-placeholder {
+    height: 180px;
+    background: linear-gradient(135deg, #1a4d8f, #2d6a4f);
+}
+
+.department-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.department-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.badge {
+    font-weight: 500;
+}
+
+@media print {
+    .navbar, .footer, .cmt-footer, .btn, .nav-tabs, nav[aria-label="breadcrumb"] {
+        display: none !important;
+    }
+    body { background: white !important; }
+    .container { max-width: 100% !important; }
+}

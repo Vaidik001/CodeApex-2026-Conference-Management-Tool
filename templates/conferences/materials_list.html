@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}Materials | CMT{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item active">Materials</li>
+        </ol>
+    </nav>
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1"><i class="bi bi-folder2-open text-primary"></i> Conference Materials</h2>
+        <p class="text-muted mb-0">Brochures, flyers, guidelines and other important documents for all conferences.</p>
+    </div>
+
+    <form method="get" class="row g-2 mb-4">
+        <div class="col-md-4">
+            <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search by title or conference">
+        </div>
+        <div class="col-md-3">
+            <select name="conference" class="form-select">
+                <option value="">All Conferences</option>
+                {% for c in conferences %}
+                <option value="{{ c.pk }}" {% if conf == c.pk|stringformat:'s' %}selected{% endif %}>{{ c.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="type" class="form-select">
+                <option value="">All Types</option>
+                {% for val, label in material_types %}
+                <option value="{{ val }}" {% if mtype == val %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2 d-grid">
+            <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i> Filter</button>
+        </div>
+    </form>
+
+    <div class="row g-4">
+        {% for m in page_obj %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex align-items-start gap-2 mb-2">
+                        {% if m.material_type == 'BROCHURE' %}
+                        <i class="bi bi-file-earmark-text fs-3 text-primary"></i>
+                        {% elif m.material_type == 'FLYER' %}
+                        <i class="bi bi-file-earmark-image fs-3 text-primary"></i>
+                        {% elif m.material_type == 'SCHEDULE' %}
+                        <i class="bi bi-calendar-event fs-3 text-primary"></i>
+                        {% elif m.material_type == 'GUIDELINES' %}
+                        <i class="bi bi-file-earmark-ruled fs-3 text-primary"></i>
+                        {% else %}
+                        <i class="bi bi-file-earmark fs-3 text-primary"></i>
+                        {% endif %}
+                        <div>
+                            <h6 class="fw-semibold mb-0">{{ m.title }}</h6>
+                            <span class="badge bg-light text-dark border small">{{ m.get_material_type_display }}</span>
+                        </div>
+                    </div>
+                    <p class="small text-muted mb-1"><i class="bi bi-mortarboard"></i>
+                        <a href="{% url 'conference_detail' pk=m.conference.pk %}" class="text-decoration-none">{{ m.conference.title }}</a>
+                    </p>
+                    <p class="small text-muted mb-3">Uploaded {{ m.uploaded_at|date:'d M Y' }}</p>
+                    <a href="{% url 'material_download' pk=m.pk %}" class="btn btn-outline-primary btn-sm w-100"><i class="bi bi-download"></i> Download</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center text-muted py-5">
+            <i class="bi bi-inbox fs-1 d-block mb-2"></i>No materials found.
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ q }}&conference={{ conf }}&type={{ mtype }}">Previous</a></li>
+            {% endif %}
+            <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+            {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ q }}&conference={{ conf }}&type={{ mtype }}">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

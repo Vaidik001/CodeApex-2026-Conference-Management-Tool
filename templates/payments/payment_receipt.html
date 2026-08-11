@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Payment Receipt | CMT{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0 rounded-4" id="receiptCard">
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-check-circle-fill text-success fs-1"></i>
+                        <h3 class="fw-bold mt-2 mb-0">Payment Successful</h3>
+                        <p class="text-muted">Your payment has been processed (demo).</p>
+                    </div>
+                    <div class="card bg-light mb-3">
+                        <div class="card-body">
+                            <div class="row g-2 small">
+                                <div class="col-6"><p class="mb-1 text-muted">Registration ID</p><p class="fw-bold"><code>{{ reg.registration_id }}</code></p></div>
+                                <div class="col-6"><p class="mb-1 text-muted">Transaction ID</p><p class="fw-bold"><code>{{ payment.transaction_id }}</code></p></div>
+                                <div class="col-6"><p class="mb-1 text-muted">Participant</p><p class="fw-bold">{{ reg.user.username }}</p></div>
+                                <div class="col-6"><p class="mb-1 text-muted">Conference</p><p class="fw-bold">{{ reg.conference.title|truncatechars:25 }}</p></div>
+                                <div class="col-6"><p class="mb-1 text-muted">Amount</p><p class="fw-bold text-primary">₹{{ payment.amount }}</p></div>
+                                <div class="col-6"><p class="mb-1 text-muted">GST</p><p class="fw-bold">Not Applicable</p></div>
+                                <div class="col-6"><p class="mb-1 text-muted">Date</p><p class="fw-bold">{{ payment.paid_at|date:"M d, Y H:i" }}</p></div>
+                                <div class="col-6"><p class="mb-1 text-muted">Status</p><p class="fw-bold"><span class="badge {{ payment.status_badge_class }}">{{ payment.get_status_display }}</span></p></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button onclick="window.print()" class="btn btn-primary"><i class="bi bi-printer"></i> Download Receipt</button>
+                        <a href="{% url 'my_registrations' %}" class="btn btn-outline-secondary">Back to Registrations</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% block title %}{{ conference.title }} | CMT{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'conference_list' %}">Conferences</a></li>
+            <li class="breadcrumb-item active">{{ conference.title|truncatechars:30 }}</li>
+        </ol>
+    </nav>
+
+    {% if conference.banner %}
+    <div class="rounded-4 overflow-hidden mb-4 shadow-sm">
+        <img src="{{ conference.banner.url }}" class="w-100" style="max-height:300px;object-fit:cover;" alt="{{ conference.title }}">
+    </div>
+    {% else %}
+    <div class="cmt-hero text-light rounded-4 mb-4 p-5 text-center">
+        <i class="bi bi-calendar-event display-1"></i>
+    </div>
+    {% endif %}
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <span class="badge {{ conference.status_badge_class }} mb-2">{{ conference.status }}</span>
+                    <span class="badge bg-light text-dark border mb-2"><i class="bi bi-upc-scan"></i> {{ conference.code }}</span>
+                    <h2 class="fw-bold mb-1">{{ conference.title }}</h2>
+                    <p class="text-muted mb-0"><i class="bi bi-building"></i> {{ conference.department|default:"General" }} &middot; <i class="bi bi-geo-alt"></i> {{ conference.venue }}</p>
+                </div>
+                {% if can_manage %}
+                <div class="d-flex gap-1">
+                    <a href="{% url 'conference_update' pk=conference.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i> Edit</a>
+                    <a href="{% url 'conference_delete' pk=conference.pk %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                </div>
+                {% endif %}
+            </div>
+
+            <ul class="nav nav-tabs mb-3" role="tablist">
+                <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#overview">Overview</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#schedule">Schedule</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#cfp">Call for Papers</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#speakers">Speakers</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#materials">Materials</button></li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="overview">
+                    <div class="card border-0 shadow-sm"><div class="card-body">
+                        <h5 class="fw-bold">Description</h5>
+                        <p>{{ conference.description|linebreaksbr }}</p>
+                        <hr>
+                        <div class="row g-3">
+                            <div class="col-md-6"><p class="mb-1 small text-muted">Organizer</p><p class="fw-semibold">{{ conference.organizer|default:"—" }}</p></div>
+                            <div class="col-md-6"><p class="mb-1 small text-muted">Contact Email</p><p class="fw-semibold">{{ conference.contact_email|default:"—" }}</p></div>
+                            <div class="col-md-6"><p class="mb-1 small text-muted">Contact Phone</p><p class="fw-semibold">{{ conference.contact_phone|default:"—" }}</p></div>
+                            <div class="col-md-6"><p class="mb-1 small text-muted">Registration Fee</p><p class="fw-semibold text-primary">₹{{ conference.registration_fee }}</p></div>
+                        </div>
+                    </div></div>
+                </div>
+                <div class="tab-pane fade" id="schedule">
+                    <div class="card border-0 shadow-sm"><div class="card-body">
+                        <h5 class="fw-bold">Conference Schedule</h5>
+                        <p><strong>Start Date:</strong> {{ conference.start_date|date:"F d, Y" }}</p>
+                        <p><strong>End Date:</strong> {{ conference.end_date|date:"F d, Y" }}</p>
+                        <p class="text-muted">Detailed schedule will be published closer to the event date. Please check the Materials tab for downloadable schedule files.</p>
+                    </div></div>
+                </div>
+                <div class="tab-pane fade" id="cfp">
+                    <div class="card border-0 shadow-sm"><div class="card-body">
+                        <h5 class="fw-bold">Call for Papers</h5>
+                        <p><strong>Abstract Deadline:</strong> {{ conference.abstract_deadline|date:"F d, Y"|default:"—" }}</p>
+                        <p><strong>Paper Deadline:</strong> {{ conference.paper_deadline|date:"F d, Y"|default:"—" }}</p>
+                        <p><strong>Registration Deadline:</strong> {{ conference.registration_deadline|date:"F d, Y"|default:"—" }}</p>
+                        <p class="mt-3">We invite researchers, scholars and students to submit original research papers and posters. Present your work to an audience of academics and industry experts.</p>
+                    </div></div>
+                </div>
+                <div class="tab-pane fade" id="speakers">
+                    <div class="card border-0 shadow-sm"><div class="card-body">
+                        <h5 class="fw-bold">Speakers</h5>
+                        <p class="text-muted">Speaker information will be announced soon. Please check back later for updates on keynote and invited speakers.</p>
+                    </div></div>
+                </div>
+                <div class="tab-pane fade" id="materials">
+                    <div class="card border-0 shadow-sm"><div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold mb-0">Conference Materials</h5>
+                            {% if can_manage %}
+                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal"><i class="bi bi-upload"></i> Upload Material</button>
+                            {% endif %}
+                        </div>
+                        {% if materials %}
+                        <div class="list-group">
+                            {% for m in materials %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi bi-file-earmark-{{ m.material_type|lower|cut:' ' }} text-primary"></i>
+                                    <strong>{{ m.title }}</strong>
+                                    <span class="badge bg-secondary ms-1">{{ m.get_material_type_display }}</span>
+                                    <small class="text-muted d-block">{{ m.uploaded_at|date:"M d, Y" }}</small>
+                                </div>
+                                <div class="d-flex gap-1">
+                                    <a href="{% url 'material_download' pk=m.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-download"></i></a>
+                                    {% if can_manage %}
+                                    <form method="post" action="{% url 'material_delete' pk=m.pk %}" class="d-inline" onsubmit="return confirm('Delete this material?')">
+                                        {% csrf_token %}
+                                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-muted text-center py-3"><i class="bi bi-inbox fs-2 d-block mb-2"></i>No materials uploaded yet.</p>
+                        {% endif %}
+                    </div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm sticky-top" style="top:80px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Quick Info</h5>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><i class="bi bi-calendar3 text-primary"></i> <strong>Dates:</strong> {{ conference.start_date|date:"M d, Y" }} – {{ conference.end_date|date:"M d, Y" }}</li>
+                        <li class="mb-2"><i class="bi bi-geo-alt text-primary"></i> <strong>Venue:</strong> {{ conference.venue }}</li>
+                        <li class="mb-2"><i class="bi bi-person text-primary"></i> <strong>Organizer:</strong> {{ conference.organizer|default:"—" }}</li>
+                        <li class="mb-2"><i class="bi bi-cash text-primary"></i> <strong>Fee:</strong> ₹{{ conference.registration_fee }}</li>
+                        <li class="mb-2"><i class="bi bi-clock text-primary"></i> <strong>Reg. Deadline:</strong> {{ conference.registration_deadline|date:"M d, Y"|default:"—" }}</li>
+                        <li class="mb-2"><i class="bi bi-file-text text-primary"></i> <strong>Abstract Deadline:</strong> {{ conference.abstract_deadline|date:"M d, Y"|default:"—" }}</li>
+                        <li class="mb-2"><i class="bi bi-file-earmark-text text-primary"></i> <strong>Paper Deadline:</strong> {{ conference.paper_deadline|date:"M d, Y"|default:"—" }}</li>
+                    </ul>
+                    <hr>
+                    {% if user.is_authenticated %}
+                        {% if is_registered %}
+                        <a href="{% url 'submission_create' %}" class="btn btn-success w-100 mb-2"><i class="bi bi-file-earmark-arrow-up"></i> Submit Abstract</a>
+                        <span class="d-block text-center small text-success"><i class="bi bi-check-circle"></i> You are registered</span>
+                        {% else %}
+                        <a href="{% url 'registration_create' %}?conference={{ conference.pk }}" class="btn btn-primary w-100 mb-2"><i class="bi bi-person-plus"></i> Register Now</a>
+                        <a href="{% url 'submission_create' %}" class="btn btn-outline-primary w-100"><i class="bi bi-file-earmark-text"></i> Submit Abstract</a>
+                        {% endif %}
+                    {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-primary w-100 mb-2"><i class="bi bi-box-arrow-in-right"></i> Login to Register</a>
+                    <a href="{% url 'register' %}" class="btn btn-outline-primary w-100">Create Account</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if can_manage %}
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'material_upload' pk=conference.pk %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header"><h5 class="modal-title">Upload Material</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                    <div class="mb-3"><label class="form-label">Title</label><input type="text" name="title" class="form-control" required></div>
+                    <div class="mb-3"><label class="form-label">Type</label>
+                        <select name="material_type" class="form-select">
+                            <option value="BROCHURE">Brochure</option><option value="FLYER">Flyer</option>
+                            <option value="CALL_FOR_PAPERS">Call for Papers</option><option value="SCHEDULE">Schedule</option>
+                            <option value="GUIDELINES">Guidelines</option>
+                        </select>
+                    </div>
+                    <div class="mb-3"><label class="form-label">File</label><input type="file" name="file" class="form-control" required></div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-primary">Upload</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

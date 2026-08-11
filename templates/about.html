@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}About | CMT{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="fw-bold mb-3">About the Conference Management Tool</h1>
+            <p class="lead text-muted">A complete academic conference management platform for universities.</p>
+            <p>The Conference Management Tool (CMT) helps universities manage past, current and upcoming conferences, department-wise events, author registrations, abstract and paper submissions, payments, and reports — all in one place.</p>
+            <h4 class="mt-4">Key Capabilities</h4>
+            <ul>
+                <li>Conference CRUD with banners, deadlines and registration fees.</li>
+                <li>Department-wise conference listing with coordinators.</li>
+                <li>Author registration with unique Registration IDs (REG-2026-00001).</li>
+                <li>Abstract & paper submission with unique Abstract IDs (CMT-2026-00001).</li>
+                <li>Submission review workflow: Submitted, Under Review, Accepted, Rejected, Revision Required, Camera Ready.</li>
+                <li>Demo payment system with transaction IDs and printable receipts.</li>
+                <li>Reports with CSV export and print support.</li>
+                <li>Role-based dashboards for Admin, Coordinator and Author.</li>
+            </ul>
+            <h4 class="mt-4">Technology</h4>
+            <p>Built with Python, Django, SQLite, Django Templates, Bootstrap 5, and Chart.js.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

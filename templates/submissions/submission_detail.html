@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}{{ sub.abstract_id }} | CMT{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'my_submissions' %}">Submissions</a></li>
+            <li class="breadcrumb-item active">{{ sub.abstract_id }}</li>
+        </ol>
+    </nav>
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <code class="fs-5">{{ sub.abstract_id }}</code>
+                            <h3 class="fw-bold mt-2 mb-1">{{ sub.title }}</h3>
+                            <p class="text-muted mb-0">{{ sub.conference.title }} &middot; <i class="bi bi-person"></i> {{ sub.author.username }}</p>
+                        </div>
+                        <span class="badge {{ sub.status_badge_class }} fs-6">{{ sub.get_status_display }}</span>
+                    </div>
+                    <hr>
+                    <h6 class="fw-bold text-muted text-uppercase small">Abstract</h6>
+                    <p>{{ sub.abstract_text|linebreaksbr }}</p>
+                    <h6 class="fw-bold text-muted text-uppercase small mt-3">Keywords</h6>
+                    <p>{{ sub.keywords|default:"—" }}</p>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-muted text-uppercase small">Paper File</h6>
+                            {% if sub.paper_file %}
+                            <a href="{{ sub.paper_file.url }}" class="btn btn-sm btn-outline-primary" target="_blank"><i class="bi bi-file-earmark-pdf"></i> {{ sub.paper_file.name|cut:'papers/' }}</a>
+                            {% else %}<span class="text-muted">No paper uploaded.</span>{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-muted text-uppercase small">Poster File</h6>
+                            {% if sub.poster_file %}
+                            <a href="{{ sub.poster_file.url }}" class="btn btn-sm btn-outline-primary" target="_blank"><i class="bi bi-file-earmark-image"></i> {{ sub.poster_file.name|cut:'posters/' }}</a>
+                            {% else %}<span class="text-muted">No poster uploaded.</span>{% endif %}
+                        </div>
+                    </div>
+                    {% if sub.remarks %}
+                    <hr>
+                    <h6 class="fw-bold text-muted text-uppercase small">Reviewer Remarks</h6>
+                    <div class="alert alert-info">{{ sub.remarks|linebreaksbr }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% if sub.author == user %}
+            <a href="{% url 'submission_update' pk=sub.pk %}" class="btn btn-warning"><i class="bi bi-pencil"></i> Edit Submission</a>
+            {% endif %}
+        </div>
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3">Submission Details</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><i class="bi bi-hash text-primary"></i> <strong>Abstract ID:</strong> {{ sub.abstract_id }}</li>
+                        <li class="mb-2"><i class="bi bi-person text-primary"></i> <strong>Author:</strong> {{ sub.author.username }}</li>
+                        <li class="mb-2"><i class="bi bi-collection text-primary"></i> <strong>Conference:</strong> {{ sub.conference.title|truncatechars:25 }}</li>
+                        <li class="mb-2"><i class="bi bi-tag text-primary"></i> <strong>Type:</strong> {{ sub.get_presentation_type_display }}</li>
+                        <li class="mb-2"><i class="bi bi-calendar text-primary"></i> <strong>Submitted:</strong> {{ sub.submitted_at|date:"M d, Y H:i" }}</li>
+                        <li class="mb-2"><i class="bi bi-clock text-primary"></i> <strong>Updated:</strong> {{ sub.updated_at|date:"M d, Y H:i" }}</li>
+                    </ul>
+                </div>
+            </div>
+
+            {% if can_review %}
+            <div class="card border-0 shadow-sm mt-3">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3">Review Actions</h6>
+                    <form method="post" action="{% url 'submission_change_status' pk=sub.pk %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label small">Status</label>
+                            <select name="status" class="form-select">
+                                {% for s in sub.Status.choices %}
+                                <option value="{{ s.0 }}" {% if sub.status == s.0 %}selected{% endif %}>{{ s.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small">Remarks</label>
+                            <textarea name="remarks" class="form-control" rows="3">{{ sub.remarks }}</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-check-lg"></i> Update Status</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

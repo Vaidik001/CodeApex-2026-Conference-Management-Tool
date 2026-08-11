@@ -1,0 +1,176 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard | CMT{% endblock %}
+
+{% block sidebar_links %}
+<a class="nav-link text-light active" href="{% url 'admin_dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+<a class="nav-link text-light" href="{% url 'conference_list' %}"><i class="bi bi-collection"></i> Conferences</a>
+<a class="nav-link text-light" href="{% url 'department_list' %}"><i class="bi bi-diagram-3"></i> Departments</a>
+<a class="nav-link text-light" href="{% url 'all_submissions' %}"><i class="bi bi-file-earmark-text"></i> Submissions</a>
+<a class="nav-link text-light" href="{% url 'all_registrations' %}"><i class="bi bi-card-checklist"></i> Registrations</a>
+<a class="nav-link text-light" href="{% url 'all_payments' %}"><i class="bi bi-credit-card"></i> Payments</a>
+<a class="nav-link text-light" href="{% url 'reports_home' %}"><i class="bi bi-bar-chart"></i> Reports</a>
+<a class="nav-link text-light" href="{% url 'profile' %}"><i class="bi bi-person"></i> My Profile</a>
+<a class="nav-link text-light" href="{% url 'notifications' %}"><i class="bi bi-bell"></i> Notifications</a>
+<hr class="border-secondary">
+<a class="nav-link text-warning" href="{% url 'logout_redirect' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">Admin Dashboard</h2>
+        <p class="text-muted small mb-0">Overview of the entire platform</p>
+    </div>
+    <a href="{% url 'conference_create' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Conference</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="small text-uppercase opacity-75">Total Conferences</div><div class="fs-3 fw-bold">{{ total_conferences }}</div></div>
+                    <i class="bi bi-collection fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="small text-uppercase opacity-75">Upcoming</div><div class="fs-3 fw-bold">{{ upcoming }}</div></div>
+                    <i class="bi bi-calendar-event fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="small text-uppercase opacity-75 text-dark">Current</div><div class="fs-3 fw-bold text-dark">{{ current }}</div></div>
+                    <i class="bi bi-broadcast fs-1 opacity-50 text-dark"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm text-white bg-secondary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="small text-uppercase opacity-75">Past</div><div class="fs-3 fw-bold">{{ past }}</div></div>
+                    <i class="bi bi-clock-history fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="small text-uppercase text-muted">Total Authors</div><div class="fs-3 fw-bold">{{ total_authors }}</div></div>
+                    <i class="bi bi-people fs-1 text-muted opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="small text-uppercase text-muted">Submissions</div><div class="fs-3 fw-bold">{{ total_submissions }}</div></div>
+                    <i class="bi bi-file-earmark-text fs-1 text-muted opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="small text-uppercase text-muted">Accepted Papers</div><div class="fs-3 fw-bold text-success">{{ accepted_papers }}</div></div>
+                    <i class="bi bi-check2-circle fs-1 text-success opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="small text-uppercase text-muted">Revenue</div><div class="fs-3 fw-bold text-primary">₹{{ total_revenue }}</div></div>
+                    <i class="bi bi-cash-coin fs-1 text-primary opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white fw-semibold">Conferences by Department</div>
+            <div class="card-body"><canvas id="deptChart" height="200"></canvas></div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white fw-semibold">Submission Status</div>
+            <div class="card-body"><canvas id="statusChart" height="200"></canvas></div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white fw-semibold d-flex justify-content-between align-items-center">
+        Recent Submissions
+        <a href="{% url 'all_submissions' %}" class="btn btn-sm btn-outline-primary">View all</a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light"><tr><th>Abstract ID</th><th>Title</th><th>Author</th><th>Conference</th><th>Status</th></tr></thead>
+                <tbody>
+                {% for s in recent_submissions %}
+                <tr>
+                    <td><code>{{ s.abstract_id }}</code></td>
+                    <td>{{ s.title|truncatechars:40 }}</td>
+                    <td>{{ s.author.username }}</td>
+                    <td>{{ s.conference.title|truncatechars:30 }}</td>
+                    <td><span class="badge {{ s.status_badge_class }}">{{ s.get_status_display }}</span></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-muted text-center">No submissions yet.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const deptLabels = [{% for d in departments %}"{{ d.name|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+const deptCounts = [{% for d in departments %}{{ d.conferences.count }}{% if not forloop.last %},{% endif %}{% endfor %}];
+new Chart(document.getElementById('deptChart'), {
+    type: 'bar',
+    data: { labels: deptLabels, datasets: [{ label: 'Conferences', data: deptCounts, backgroundColor: '#0d6efd' }] },
+    options: { responsive: true, plugins: { legend: { display: false } } }
+});
+
+const statusLabels = ['Submitted','Under Review','Accepted','Rejected','Revision','Camera Ready'];
+const statusCounts = [
+    {{ status_submitted|default:0 }}, {{ status_under_review|default:0 }}, {{ status_accepted|default:0 }},
+    {{ status_rejected|default:0 }}, {{ status_revision_required|default:0 }}, {{ status_camera_ready|default:0 }}
+];
+new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: { labels: statusLabels, datasets: [{ data: statusCounts, backgroundColor: ['#0dcaf0','#ffc107','#198754','#dc3545','#fd7e14','#0d6efd'] }] }
+});
+</script>
+{% endblock %}

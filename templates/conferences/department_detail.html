@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}{{ department.name }} | CMT{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'department_list' %}">Departments</a></li>
+            <li class="breadcrumb-item active">{{ department.name|truncatechars:30 }}</li>
+        </ol>
+    </nav>
+    <div class="card border-0 shadow-sm mb-4 rounded-4">
+        <div class="card-body p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h2 class="fw-bold mb-1"><i class="bi bi-diagram-3 text-primary"></i> {{ department.name }}</h2>
+                    <p class="text-muted">{{ department.description }}</p>
+                    <p class="mb-0"><i class="bi bi-person-badge text-primary"></i> Coordinator: <strong>{{ department.coordinator.get_full_name|default:department.coordinator.username|default:"Not assigned" }}</strong></p>
+                </div>
+                {% if user.is_superuser %}
+                <a href="{% url 'department_update' pk=department.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i> Edit</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs mb-3">
+        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#upcoming">Upcoming ({{ upcoming|length }})</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#current">Current ({{ current|length }})</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#past">Past ({{ past|length }})</button></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="upcoming">
+            <div class="row g-3">
+                {% for c in upcoming %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body">
+                            <span class="badge bg-primary mb-2">Upcoming</span>
+                            <h6 class="fw-semibold">{{ c.title|truncatechars:50 }}</h6>
+                            <p class="small text-muted mb-1"><i class="bi bi-geo-alt"></i> {{ c.venue }}</p>
+                            <p class="small mb-2"><i class="bi bi-calendar3"></i> {{ c.start_date|date:"M d, Y" }}</p>
+                            <a href="{% url 'conference_detail' pk=c.pk %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}<div class="col-12 text-muted">No upcoming conferences.</div>{% endfor %}
+            </div>
+        </div>
+        <div class="tab-pane fade" id="current">
+            <div class="row g-3">
+                {% for c in current %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body">
+                            <span class="badge bg-success mb-2">Current</span>
+                            <h6 class="fw-semibold">{{ c.title|truncatechars:50 }}</h6>
+                            <p class="small text-muted mb-1"><i class="bi bi-geo-alt"></i> {{ c.venue }}</p>
+                            <p class="small mb-2"><i class="bi bi-calendar3"></i> {{ c.start_date|date:"M d, Y" }}</p>
+                            <a href="{% url 'conference_detail' pk=c.pk %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}<div class="col-12 text-muted">No current conferences.</div>{% endfor %}
+            </div>
+        </div>
+        <div class="tab-pane fade" id="past">
+            <div class="row g-3">
+                {% for c in past %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body">
+                            <span class="badge bg-secondary mb-2">Past</span>
+                            <h6 class="fw-semibold">{{ c.title|truncatechars:50 }}</h6>
+                            <p class="small text-muted mb-1"><i class="bi bi-geo-alt"></i> {{ c.venue }}</p>
+                            <p class="small mb-2"><i class="bi bi-calendar3"></i> {{ c.start_date|date:"M d, Y" }}</p>
+                            <a href="{% url 'conference_detail' pk=c.pk %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}<div class="col-12 text-muted">No past conferences.</div>{% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
